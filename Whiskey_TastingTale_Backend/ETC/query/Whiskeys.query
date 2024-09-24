@@ -1,0 +1,36 @@
+use Whiskey_TT; 
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE Whiskeys(
+    whiskey_id INT PRIMARY KEY IDENTITY,
+    img_index NVARCHAR(MAX),
+    details NVARCHAR(MAX),
+    page_url NVARCHAR(MAX),
+    alcohol_degree FLOAT,
+    maker NVARCHAR(MAX),
+    created_date DATETIME
+);
+
+-------------------------------------------------------------------------------
+
+INSERT INTO WhiskeyInfo (img_index, details, page_url, alcohol_degree, maker)
+VALUES (@img_index, @details, @page_url, @alcohol_degree, @maker);
+
+INSERT INTO Whiskeys (img_index, details, page_url, alcohol_degree, maker)
+VALUES ('1.png', 'dd' , 'd.d' , 60.3, 'dddd');
+
+-------------------------------------------------------------------------------
+
+CREATE TRIGGER UpdateCreatedDate
+ON Whiskeys
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Whiskeys
+    SET created_date = getDate()
+    FROM Whiskeys
+    JOIN inserted ON Whiskeys.whiskey_id = inserted.whiskey_id;
+END;
+
+-------------------------------------------------------------------------------
