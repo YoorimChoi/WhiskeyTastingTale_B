@@ -37,21 +37,24 @@ namespace Whiskey_TastingTale_Backend.Controllers
         public async Task<IActionResult> PostAsync(Whiskey whiskey)
         {
             var result = await _repository.AddWhiskey(whiskey);
-            return Ok(result);
+            if (result != null) return Ok(result);
+            else return BadRequest(whiskey);  
         }
 
         [HttpPut()]
         public async Task<IActionResult> PutAsync(Whiskey whiskey)
         {
             var result = await _repository.UpdateWhiskey(whiskey);
-            return Ok(result);
+            if (result != null) return Ok(result);
+            else return BadRequest(whiskey);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _repository.DeleteWhiskey(id);
-            return Ok(result);
+            if (result != null) return Ok(result);
+            else return BadRequest(id);
         }
     }
 }
