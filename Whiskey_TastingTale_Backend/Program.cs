@@ -12,8 +12,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<WhiskeyRepository>();
+builder.Services.AddTransient<UserRepository>();
 
 builder.Services.AddDbContext<WhiskeyContext>(
+        options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=Whiskey_TT;Trusted_Connection=true;Encrypt=false;TrustServerCertificate=true;"));
+builder.Services.AddDbContext<UserContext>(
         options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=Whiskey_TT;Trusted_Connection=true;Encrypt=false;TrustServerCertificate=true;"));
 
 

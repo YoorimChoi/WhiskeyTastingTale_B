@@ -1,0 +1,26 @@
+use Whiskey_TT; 
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY IDENTITY, 
+    salt NVARCHAR(MAX) NOT NULL, 
+    email NVARCHAR(MAX) NOT NULL, 
+    password_hash NVARCHAR(MAX) NOT NULL, 
+    nickname NVARCHAR(30) NOT NULL, 
+    role NVARCHAR(30) NOT NULL, 
+    is_active BIT NOT NULL, 
+)
+
+-------------------------------------------------------------------------------
+
+INSERT INTO TT.dbo.UserInfo (user_id, salt, email, password_hash, nickname, role , is_active)
+VALUES (@id, @salt, @email, @password_hash, @nickname, @role, @is_active); 
+
+
+INSERT INTO Whiskey_TT.dbo.Users ( salt, email, password_hash, nickname, role , is_active)
+VALUES ( 'aaaa', 'abc@naver.com', 'dddddddd', 'abc', 'admin', 0); 
+INSERT INTO Whiskey_TT.dbo.Users ( salt, email, password_hash, nickname, role , is_active)
+VALUES ( 'bbbb', 'abcdef@naver.com', 'ddddddddddfffdd', 'abcdef', 'user', 1); 
+
+-------------------------------------------------------------------------------
