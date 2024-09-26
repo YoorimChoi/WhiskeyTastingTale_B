@@ -56,12 +56,12 @@ namespace Whiskey_TastingTale_Backend.Repository
             else return user.salt; 
         }
 
-        internal async Task<bool> LoginAsync(string email, string password)
+        internal async Task<User> LoginAsync(string email, string password)
         {
             var user =  await _context.users.FirstOrDefaultAsync(x => x.email == email);
-            if (user != null && user.password_hash == password) return true;
+            if (user != null && user.password_hash == password) return user;
        
-            return false; 
+            return null; 
         }
 
         internal async Task<User> UpdateUserAsync(User user)

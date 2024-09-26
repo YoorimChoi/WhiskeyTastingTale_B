@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Diagnostics.Eventing.Reader;
-using System.Reflection;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Whiskey_TastingTale_Backend.Model;
 using Whiskey_TastingTale_Backend.Repository;
 
@@ -13,13 +15,16 @@ namespace Whiskey_TastingTale_Backend.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly UserRepository _repository;
+        private readonly IConfiguration _configuration;
 
-        public UserController(ILogger<UserController> logger, UserRepository repository)
+        public UserController(ILogger<UserController> logger, UserRepository repository, IConfiguration configuration)
         {
             _logger = logger;
             _repository = repository;
+            _configuration = configuration;
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
@@ -56,7 +61,12 @@ namespace Whiskey_TastingTale_Backend.Controllers
         public async Task<IActionResult> PostAsync(string email, string password)
         {
             var result = await _repository.LoginAsync(email, password);
-            return Ok(result);
+            if (result != null)
+            {
+                var token = GenerateJwtToken(email, result);
+                return Ok(new { Token = token });
+        }
+            return Unauthorized();
         }
 
         [HttpPut]
@@ -67,12 +77,37 @@ namespace Whiskey_TastingTale_Backend.Controllers
             else return BadRequest(user);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _repository.DeleteUserAsync(id);
             if (result != null) return Ok(result);
             else return BadRequest(id);
+        }
+
+        private string GenerateJwtToken(string email, User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.nickname),
+                new Claim(ClaimTypes.Email, user.email),
+                new Claim(ClaimTypes.Role, user.role)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:ExpireDays"]));
+
+            var token = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Issuer"],
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
