@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Reflection;
@@ -33,6 +34,7 @@ namespace Whiskey_TastingTale_Backend.Controllers
             return Ok(result); 
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> PostAsync(Whiskey whiskey)
         {
@@ -41,6 +43,7 @@ namespace Whiskey_TastingTale_Backend.Controllers
             else return BadRequest(whiskey);  
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut()]
         public async Task<IActionResult> PutAsync(Whiskey whiskey)
         {
@@ -49,6 +52,7 @@ namespace Whiskey_TastingTale_Backend.Controllers
             else return BadRequest(whiskey);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
