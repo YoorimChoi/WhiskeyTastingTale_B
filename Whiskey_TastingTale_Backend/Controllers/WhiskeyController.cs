@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Reflection;
 using Whiskey_TastingTale_Backend.Model;
 using Whiskey_TastingTale_Backend.Repository;
 

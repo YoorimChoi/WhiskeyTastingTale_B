@@ -44,13 +44,22 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
+//Add Repository Service 
 builder.Services.AddTransient<WhiskeyRepository>();
 builder.Services.AddTransient<UserRepository>();
+builder.Services.AddTransient<ReviewRepository>();
+builder.Services.AddTransient<RatingRepository>();
 
+
+//Add Db Context
 builder.Services.AddDbContext<WhiskeyContext>(
-        options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=Whiskey_TT;Trusted_Connection=true;Encrypt=false;TrustServerCertificate=true;"));
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 builder.Services.AddDbContext<UserContext>(
-        options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=Whiskey_TT;Trusted_Connection=true;Encrypt=false;TrustServerCertificate=true;"));
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
+builder.Services.AddDbContext<ReviewContext>(
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
+builder.Services.AddDbContext<RatingContext>(
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 
 //Setting JWT 
 builder.Services.AddAuthentication(options => //Using jwt as the basic authentication method
