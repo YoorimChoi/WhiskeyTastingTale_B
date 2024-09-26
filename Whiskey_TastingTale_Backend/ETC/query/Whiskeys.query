@@ -8,8 +8,7 @@ CREATE TABLE Whiskeys(
     details NVARCHAR(MAX),
     page_url NVARCHAR(MAX),
     alcohol_degree FLOAT,
-    maker NVARCHAR(MAX),
-    created_date DATETIME
+    maker NVARCHAR(MAX)
 );
 
 -------------------------------------------------------------------------------
