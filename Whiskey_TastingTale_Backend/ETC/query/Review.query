@@ -1,0 +1,56 @@
+use Whiskey_TT; 
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE Reviews (
+    review_id BIGINT PRIMARY KEY IDENTITY, 
+    user_id INT NOT NULL, 
+    whiskey_id INT NOT NULL, 
+    rating INT NOT NULL, 
+    review_text NVARCHAR(MAX) NOT NULL, 
+    created_date DATETIME2,
+    updated_date DATETIME2,
+    CONSTRAINT FK_Reviews_Users FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    CONSTRAINT FK_Reviews_Whiskeys FOREIGN KEY (whiskey_id) REFERENCES Whiskeys(whiskey_id)
+)
+
+
+-------------------------------------------------------------------------------
+
+INSERT INTO Whiskey_TT.dbo.Reviews (user_id, whiskey_id, rating, review_text)
+VALUES (@user_id, @whiskey_id, @rating, @review_text); 
+
+
+INSERT INTO Whiskey_TT.dbo.Reviews (user_id, whiskey_id, rating, review_text)
+VALUES (1, 1, 5, '최고에요'); 
+INSERT INTO Whiskey_TT.dbo.Reviews (user_id, whiskey_id, rating, review_text)
+VALUES (1, 2, 3, '걍그래요'); 
+
+-------------------------------------------------------------------------------
+
+CREATE TRIGGER UpdateCreatedDate_Reviews
+ON Reviews
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Reviews
+    SET created_date = getDate() 
+    FROM Reviews
+    JOIN inserted ON Reviews.review_id = inserted.review_id;
+END;
+
+
+CREATE TRIGGER UpdateUpdatedDate_Reviews
+ON Reviews
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE Reviews
+    SET updated_date = getDate()
+    FROM Reviews
+    JOIN inserted ON Reviews.review_id = inserted.review_id;
+END;
+
+
+
+-------------------------------------------------------------------------------
