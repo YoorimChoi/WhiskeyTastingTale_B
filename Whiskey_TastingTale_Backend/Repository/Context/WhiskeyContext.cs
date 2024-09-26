@@ -7,7 +7,7 @@ namespace Whiskey_TastingTale_Backend.Repository.Context
     {
         internal DbSet<Whiskey> whiskeys { get; set; }
 
-        public WhiskeyContext(DbContextOptions options) : base(options)
+        public WhiskeyContext(DbContextOptions<WhiskeyContext> options) : base(options)
         {
 
         }
