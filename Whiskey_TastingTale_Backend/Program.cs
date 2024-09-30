@@ -82,7 +82,7 @@ builder.Services.AddAuthentication(options => //Using jwt as the basic authentic
 });
 
 var app = builder.Build();
-
+app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
