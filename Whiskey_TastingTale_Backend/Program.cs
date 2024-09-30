@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Whiskey_TastingTale_Backend.Repository;
-using Whiskey_TastingTale_Backend.Repository.Context;
+using Whiskey_TastingTale_Backend.Data.Repository;
+using Whiskey_TastingTale_Backend.Data.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
