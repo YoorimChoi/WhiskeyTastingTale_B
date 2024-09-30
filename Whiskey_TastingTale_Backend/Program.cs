@@ -48,7 +48,6 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddTransient<WhiskeyRepository>();
 builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<ReviewRepository>();
-builder.Services.AddTransient<RatingRepository>();
 
 
 //Add Db Context
@@ -58,8 +57,7 @@ builder.Services.AddDbContext<UserContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 builder.Services.AddDbContext<ReviewContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
-builder.Services.AddDbContext<RatingContext>(
-        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
+
 
 //Setting JWT 
 builder.Services.AddAuthentication(options => //Using jwt as the basic authentication method
