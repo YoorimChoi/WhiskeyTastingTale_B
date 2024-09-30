@@ -6,11 +6,11 @@ namespace Whiskey_TastingTale_Backend.Data.Entities
     {
         [Key]
         public int user_id { get; set; }
-        public required string nickname { get; set; }
-        public required string email { get; set; }
-        public required string password_hash { get; set; }
-        public required string salt { get; set; }
-        public required string role { get; set; }
-        public bool is_active { get; set; }
+        public string? nickname { get; set; }
+        public string? email { get; set; }
+        public string? password_hash { get; set; }
+        public string? salt { get; set; }
+        public string? role { get; set; }
+        public bool? is_active { get; set; }
     }
 }

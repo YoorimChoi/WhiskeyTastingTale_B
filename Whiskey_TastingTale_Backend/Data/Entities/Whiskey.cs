@@ -8,7 +8,7 @@ namespace Whiskey_TastingTale_Backend.Data.Entities
         public int whiskey_id { get; set; }
         public string? whiskey_name { get; set; }
         public string? img_index { get; set; }
-        public double alcohol_degree { get; set; }
+        public double? alcohol_degree { get; set; }
         public string? maker { get; set; }
         public string? details { get; set; }
         public string? page_url { get; set; }
