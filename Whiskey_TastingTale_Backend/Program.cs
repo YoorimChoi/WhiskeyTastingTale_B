@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Whiskey_TastingTale_Backend.Repository;
-using Whiskey_TastingTale_Backend.Repository.Context;
+using Whiskey_TastingTale_Backend.Data.Repository;
+using Whiskey_TastingTale_Backend.Data.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +48,6 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddTransient<WhiskeyRepository>();
 builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<ReviewRepository>();
-builder.Services.AddTransient<RatingRepository>();
 
 
 //Add Db Context
@@ -58,8 +57,7 @@ builder.Services.AddDbContext<UserContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 builder.Services.AddDbContext<ReviewContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
-builder.Services.AddDbContext<RatingContext>(
-        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
+
 
 //Setting JWT 
 builder.Services.AddAuthentication(options => //Using jwt as the basic authentication method
@@ -84,7 +82,7 @@ builder.Services.AddAuthentication(options => //Using jwt as the basic authentic
 });
 
 var app = builder.Build();
-
+app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

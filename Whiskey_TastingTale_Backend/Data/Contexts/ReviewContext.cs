@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Whiskey_TastingTale_Backend.Model;
+using Whiskey_TastingTale_Backend.Data.Entities;
 
-namespace Whiskey_TastingTale_Backend.Repository.Context
+namespace Whiskey_TastingTale_Backend.Data.Context
 {
     public class ReviewContext : DbContext
     {
@@ -17,7 +17,7 @@ namespace Whiskey_TastingTale_Backend.Repository.Context
                 .Entity<Review>()
                 .ToTable(tb => tb.HasTrigger("UpdateCreatedDate_Reviews"))
                 .ToTable(tb => tb.HasTrigger("UpdateUpdatedDate_Reviews"))
-                .ToTable(tb => tb.HasTrigger("UpdateTotalRating_Reviews"));
+                .ToTable(tb => tb.HasTrigger("UpdateTotalRating"));
 
         }
     }

@@ -4,32 +4,111 @@ use Whiskey_TT;
 
 CREATE TABLE Whiskeys(
     whiskey_id INT PRIMARY KEY IDENTITY,
+    whiskey_name NVARCHAR(MAX),
     img_index NVARCHAR(MAX),
     details NVARCHAR(MAX),
     page_url NVARCHAR(MAX),
     alcohol_degree FLOAT,
-    maker NVARCHAR(MAX)
+    maker NVARCHAR(MAX),
+    rating FLOAT,
+    review_count INT,
+    created_date DATETIME2,
+    updated_date DATETIME2,
 );
 
+ALTER TABLE Whiskeys
+ADD CONSTRAINT DF_Whiskeys_ReviewCount DEFAULT 0 FOR review_count;
+
+ALTER TABLE Whiskeys
+ADD CONSTRAINT DF_Whiskeys_Rating DEFAULT 0 FOR rating;
+
+
 -------------------------------------------------------------------------------
 
-INSERT INTO WhiskeyInfo (img_index, details, page_url, alcohol_degree, maker)
-VALUES (@img_index, @details, @page_url, @alcohol_degree, @maker);
+INSERT INTO WhiskeyInfo (whiskey_name, img_index, details, page_url, alcohol_degree, maker)
+VALUES (@whiskey_name, @img_index, @details, @page_url, @alcohol_degree, @maker, 0, 0);
 
-INSERT INTO Whiskeys (img_index, details, page_url, alcohol_degree, maker)
-VALUES ('1.png', 'dd' , 'd.d' , 60.3, 'dddd');
+INSERT INTO Whiskeys (whiskey_name, img_index, details, page_url, alcohol_degree, maker)
+VALUES ('발베니12년' , '1.png', 'dd' , 'd.d' , 60.3, 'dddd');
 
 -------------------------------------------------------------------------------
 
-CREATE TRIGGER UpdateCreatedDate
+CREATE TRIGGER UpdateCreated_Whiskeys
 ON Whiskeys
 AFTER INSERT
 AS
 BEGIN
     UPDATE Whiskeys
-    SET created_date = getDate()
+    SET 
+        created_date = getDate(), 
+        rating = 0, 
+        review_count = 0
+    FROM Whiskeys
+    JOIN inserted ON Whiskeys.whiskey_id = inserted.whiskey_id;
+END;
+
+
+CREATE TRIGGER UpdateUpdated_Whiskeys
+ON Whiskeys
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE Whiskeys
+    SET updated_date = getDate()
     FROM Whiskeys
     JOIN inserted ON Whiskeys.whiskey_id = inserted.whiskey_id;
 END;
 
 -------------------------------------------------------------------------------
+
+CREATE TRIGGER UpdateTotalRating
+ON Reviews
+AFTER INSERT, DELETE
+AS
+BEGIN
+	IF EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+	;WITH InsertedAgg AS (
+            SELECT
+                whiskey_id,
+                COUNT(*) AS cnt,
+                SUM(rating) AS total_rating,
+				AVG(rating) AS avg_rating
+            FROM
+                inserted
+            GROUP BY
+                whiskey_id
+        )
+        UPDATE w
+        SET w.rating = CASE 
+                           WHEN w.review_count = 0 THEN i.avg_rating
+                           ELSE ((w.rating * w.review_count) + i.total_rating) / (w.review_count + i.cnt)
+                       END,
+            w.review_count = w.review_count + i.cnt
+        FROM Whiskeys w
+        INNER JOIN InsertedAgg i ON w.whiskey_id = i.whiskey_id;
+    END;
+
+    -- 리뷰가 삭제되었을 때
+    IF EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+		;WITH DeletedAgg AS (
+            SELECT
+                whiskey_id,
+                COUNT(*) AS cnt,
+                SUM(rating) AS total_rating
+            FROM
+                deleted
+            GROUP BY
+                whiskey_id
+        )
+        UPDATE w
+        SET w.rating = CASE 
+                           WHEN w.review_count = d.cnt THEN 0
+                           ELSE ((w.rating * w.review_count) - d.total_rating) / (w.review_count - d.cnt)
+                       END, 
+            w.review_count = w.review_count -  d.cnt
+        FROM Whiskeys w
+        INNER JOIN DeletedAgg  d ON w.whiskey_id = d.whiskey_id;
+    END;
+END;

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Whiskey_TastingTale_Backend.Model;
-using Whiskey_TastingTale_Backend.Repository.Context;
+using Whiskey_TastingTale_Backend.Data.Context;
+using Whiskey_TastingTale_Backend.Data.Entities;
 
-namespace Whiskey_TastingTale_Backend.Repository
+namespace Whiskey_TastingTale_Backend.Data.Repository
 {
     public class ReviewRepository
     {
@@ -15,15 +15,15 @@ namespace Whiskey_TastingTale_Backend.Repository
 
         internal async Task<Review> Create(Review review)
         {
-            var result = _context.reviews.Add(review); 
+            var result = _context.reviews.Add(review);
             await _context.SaveChangesAsync();
 
-            return result.Entity; 
+            return result.Entity;
         }
         internal async Task<Review> Delete(long review_id)
         {
             var review = await _context.reviews.FindAsync(review_id);
-            _context.reviews.Remove(review); 
+            _context.reviews.Remove(review);
             await _context.SaveChangesAsync();
 
             return review;
@@ -31,23 +31,23 @@ namespace Whiskey_TastingTale_Backend.Repository
 
         internal async Task<List<Review>> GetById(int whiskey_id)
         {
-            return await _context.reviews.Where(x => x.whiskey_id == whiskey_id).ToListAsync(); 
+            return await _context.reviews.Where(x => x.whiskey_id == whiskey_id).ToListAsync();
         }
 
         internal async Task<Review> Update(Review review)
         {
             var origin = await _context.reviews.FindAsync(review.review_id);
-            origin.user_id = review.user_id; 
+            origin.user_id = review.user_id;
             origin.whiskey_id = review.whiskey_id;
             origin.review_text = review.review_text;
-            origin.rating = review.rating; 
+            origin.rating = review.rating;
 
 
             var result = _context.reviews.Update(origin);
             await _context.SaveChangesAsync();
 
-            return result.Entity; 
-            
+            return result.Entity;
+
         }
     }
 }

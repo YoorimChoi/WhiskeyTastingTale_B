@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Whiskey_TastingTale_Backend.Model
+namespace Whiskey_TastingTale_Backend.Data.Entities
 {
     public class Review
     {

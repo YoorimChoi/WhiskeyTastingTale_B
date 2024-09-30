@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Whiskey_TastingTale_Backend.Model;
+using Whiskey_TastingTale_Backend.Data.Context;
+using Whiskey_TastingTale_Backend.Data.Entities;
 
-namespace Whiskey_TastingTale_Backend.Repository
+namespace Whiskey_TastingTale_Backend.Data.Repository
 {
     public class UserRepository
     {
-        private readonly UserContext _context; 
+        private readonly UserContext _context;
         public UserRepository(UserContext context)
         {
             _context = context;
@@ -13,7 +14,7 @@ namespace Whiskey_TastingTale_Backend.Repository
 
         internal async Task<User> AddUserAsync(User user)
         {
-            var email = user.email; 
+            var email = user.email;
             var nickname = user.nickname;
 
             var count = await _context.users.Where(x => x.email == email || x.nickname == nickname).CountAsync();
@@ -24,7 +25,7 @@ namespace Whiskey_TastingTale_Backend.Repository
                 return result.Entity;
             }
 
-            return null; 
+            return null;
         }
 
         internal async Task<User> DeleteUserAsync(int id)
@@ -36,12 +37,12 @@ namespace Whiskey_TastingTale_Backend.Repository
                 _context.users.Update(user);
                 await _context.SaveChangesAsync();
             }
-            return user; 
+            return user;
         }
 
         internal async Task<List<User>> GetAllAsync()
         {
-            return await _context.users.AsQueryable().ToListAsync(); 
+            return await _context.users.AsQueryable().ToListAsync();
         }
 
         internal async Task<User> GetByEmailAsync(string email)
@@ -52,16 +53,16 @@ namespace Whiskey_TastingTale_Backend.Repository
         internal async Task<string> GetSaltAsync(string email)
         {
             var user = await _context.users.FirstOrDefaultAsync(x => x.email == email);
-            if (user == null) return null; 
-            else return user.salt; 
+            if (user == null) return null;
+            else return user.salt;
         }
 
         internal async Task<User> LoginAsync(string email, string password)
         {
-            var user =  await _context.users.FirstOrDefaultAsync(x => x.email == email);
+            var user = await _context.users.FirstOrDefaultAsync(x => x.email == email);
             if (user != null && user.password_hash == password) return user;
-       
-            return null; 
+
+            return null;
         }
 
         internal async Task<User> UpdateUserAsync(User user)
@@ -69,7 +70,7 @@ namespace Whiskey_TastingTale_Backend.Repository
             var result = _context.users.Update(user);
             await _context.SaveChangesAsync();
 
-            return result.Entity; 
+            return result.Entity;
         }
     }
 }
