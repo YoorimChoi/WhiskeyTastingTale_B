@@ -13,5 +13,13 @@ namespace Whiskey_TastingTale_Backend.Data.Context
             
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .Entity<Whiskey>()
+                .ToTable(tb => tb.HasTrigger("UpdateCreated_Whiskeys"))
+                .ToTable(tb => tb.HasTrigger("UpdateUpdated_Whiskeys"));
+
+        }
     }
 }
