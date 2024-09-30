@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Whiskey_TastingTale_Backend.Model;
-using Whiskey_TastingTale_Backend.Repository;
+using Whiskey_TastingTale_Backend.Data.Entities;
+using Whiskey_TastingTale_Backend.Data.Repository;
 
-namespace Whiskey_TastingTale_Backend.Controllers
+namespace Whiskey_TastingTale_Backend.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -21,15 +21,15 @@ namespace Whiskey_TastingTale_Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var result = await _repository.GetAllWhiskey(); 
-            return Ok(result); 
+            var result = await _repository.GetAllWhiskey();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIDAsync(int id)
         {
             var result = await _repository.GetById(id);
-            return Ok(result); 
+            return Ok(result);
         }
 
         [Authorize(Roles = "admin")]
@@ -38,7 +38,7 @@ namespace Whiskey_TastingTale_Backend.Controllers
         {
             var result = await _repository.AddWhiskey(whiskey);
             if (result != null) return Ok(result);
-            else return BadRequest(whiskey);  
+            else return BadRequest(whiskey);
         }
 
         [Authorize(Roles = "admin")]

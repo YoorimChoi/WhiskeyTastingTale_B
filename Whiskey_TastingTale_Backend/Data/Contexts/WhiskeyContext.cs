@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Whiskey_TastingTale_Backend.Model;
+using System.Reflection.Emit;
+using Whiskey_TastingTale_Backend.Data.Entities;
 
-namespace Whiskey_TastingTale_Backend.Repository.Context
+namespace Whiskey_TastingTale_Backend.Data.Context
 {
     public class WhiskeyContext : DbContext
     {
@@ -9,7 +10,7 @@ namespace Whiskey_TastingTale_Backend.Repository.Context
 
         public WhiskeyContext(DbContextOptions<WhiskeyContext> options) : base(options)
         {
-
+            
         }
 
     }

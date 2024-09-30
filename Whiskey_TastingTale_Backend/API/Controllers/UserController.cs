@@ -4,10 +4,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Whiskey_TastingTale_Backend.Model;
-using Whiskey_TastingTale_Backend.Repository;
+using Whiskey_TastingTale_Backend.Data.Entities;
+using Whiskey_TastingTale_Backend.Data.Repository;
 
-namespace Whiskey_TastingTale_Backend.Controllers
+namespace Whiskey_TastingTale_Backend.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -28,15 +28,15 @@ namespace Whiskey_TastingTale_Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var result = await _repository.GetAllAsync(); 
-            return Ok(result); 
+            var result = await _repository.GetAllAsync();
+            return Ok(result);
         }
 
         [HttpGet("{email}")]
         public async Task<IActionResult> GetAsync(string email)
         {
             var result = await _repository.GetByEmailAsync(email);
-            if(result != null) return Ok(result);
+            if (result != null) return Ok(result);
             else return BadRequest(email);
         }
 
@@ -44,7 +44,7 @@ namespace Whiskey_TastingTale_Backend.Controllers
         public async Task<IActionResult> GetSaltAsync(string email)
         {
             var result = await _repository.GetSaltAsync(email);
-            if (result != null) return Ok(result); 
+            if (result != null) return Ok(result);
             else return BadRequest(email);
         }
 
@@ -53,27 +53,28 @@ namespace Whiskey_TastingTale_Backend.Controllers
         public async Task<IActionResult> PostAsync(User user)
         {
             var result = await _repository.AddUserAsync(user);
-            if (result != null) return Ok(result); 
-            else return BadRequest(user);  
+            if (result != null) return Ok(result);
+            else return BadRequest(user);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> PostAsync(string email, string password)
+        public async Task<IActionResult> LoginAsync(User user)
         {
-            var result = await _repository.LoginAsync(email, password);
+            var result = await _repository.LoginAsync(user.email, user.password_hash);
             if (result != null)
             {
-                var token = GenerateJwtToken(email, result);
+                var token = GenerateJwtToken(user.email, result);
                 return Ok(new { Token = token });
-        }
+            }
             return Unauthorized();
         }
 
         [HttpPut]
         public async Task<IActionResult> PutAsync(User user)
         {
+            //TODO : user의 role 에 따라서 동작이 달라져야함 -> user = 자기 것만 변경 가능, admin = 모두 변경가능 
             var result = await _repository.UpdateUserAsync(user);
-            if(result != null) return Ok(result);
+            if (result != null) return Ok(result);
             else return BadRequest(user);
         }
 

@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Whiskey_TastingTale_Backend.Model
+namespace Whiskey_TastingTale_Backend.Data.Entities
 {
     public class Whiskey
     {
         [Key]
-        public int whiskey_id {  get; set; }  
+        public int whiskey_id { get; set; }
 
         public string? img_index { get; set; }
         public double alcohol_degree { get; set; }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Whiskey_TastingTale_Backend.Model;
-using Whiskey_TastingTale_Backend.Repository.Context;
+using Whiskey_TastingTale_Backend.Data.Entities;
+using Whiskey_TastingTale_Backend.Data.Context;
 
-namespace Whiskey_TastingTale_Backend.Repository
+namespace Whiskey_TastingTale_Backend.Data.Repository
 {
     public class WhiskeyRepository
     {
-        private readonly WhiskeyContext _context; 
+        private readonly WhiskeyContext _context;
         public WhiskeyRepository(WhiskeyContext context)
         {
-              _context = context;
+            _context = context;
         }
 
         internal async Task<Whiskey> AddWhiskey(Whiskey whiskey)
@@ -20,11 +20,11 @@ namespace Whiskey_TastingTale_Backend.Repository
                 details = whiskey.details,
                 maker = whiskey.maker
                 //TODO) 이미지는 어떻게 넣지? img_index
-            }; 
-            await _context.whiskeys.AddAsync(temp); 
+            };
+            await _context.whiskeys.AddAsync(temp);
             await _context.SaveChangesAsync();
 
-            return temp; 
+            return temp;
         }
 
         internal async Task<Whiskey> DeleteWhiskey(int id)
@@ -36,7 +36,7 @@ namespace Whiskey_TastingTale_Backend.Repository
                 await _context.SaveChangesAsync();
             }
 
-            return temp; 
+            return temp;
         }
 
         internal async Task<List<Whiskey>> GetAllWhiskey()
@@ -45,16 +45,17 @@ namespace Whiskey_TastingTale_Backend.Repository
         }
 
         internal async Task<Whiskey> GetById(int id)
-        { 
-            return await _context.whiskeys.FindAsync(id); 
+        {
+            return await _context.whiskeys.FindAsync(id);
         }
+
 
         internal async Task<Whiskey> UpdateWhiskey(Whiskey whiskey)
         {
             var temp = _context.whiskeys.Update(whiskey);
             await _context.SaveChangesAsync();
 
-            return temp.Entity; 
+            return temp.Entity;
         }
 
 

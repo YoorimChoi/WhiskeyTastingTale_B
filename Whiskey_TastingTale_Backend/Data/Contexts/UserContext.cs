@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Whiskey_TastingTale_Backend.Model;
+using Whiskey_TastingTale_Backend.Data.Entities;
 
-namespace Whiskey_TastingTale_Backend.Repository
+namespace Whiskey_TastingTale_Backend.Data.Context
 {
     public class UserContext : DbContext
     {
