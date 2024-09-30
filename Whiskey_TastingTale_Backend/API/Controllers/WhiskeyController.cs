@@ -31,6 +31,12 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             var result = await _repository.GetById(id);
             return Ok(result);
         }
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetByNameAsync(string name)
+        {
+            var result = await _repository.GetByName(name);
+            return Ok(result);
+        }
 
         [Authorize(Roles = "admin")]
         [HttpPost]

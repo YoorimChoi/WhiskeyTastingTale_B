@@ -6,7 +6,7 @@ namespace Whiskey_TastingTale_Backend.Data.Entities
     {
         [Key]
         public int whiskey_id { get; set; }
-
+        public string? whiskey_name { get; set; }
         public string? img_index { get; set; }
         public double alcohol_degree { get; set; }
         public string? maker { get; set; }
