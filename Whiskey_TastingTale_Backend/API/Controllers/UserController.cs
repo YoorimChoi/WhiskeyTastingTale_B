@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Whiskey_TastingTale_Backend.API.DTOs;
 using Whiskey_TastingTale_Backend.Data.Entities;
 using Whiskey_TastingTale_Backend.Data.Repository;
 
@@ -32,14 +33,6 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{email}")]
-        public async Task<IActionResult> GetAsync(string email)
-        {
-            var result = await _repository.GetByEmailAsync(email);
-            if (result != null) return Ok(result);
-            else return BadRequest(email);
-        }
-
         [HttpGet("salt/{email}")]
         public async Task<IActionResult> GetSaltAsync(string email)
         {
@@ -64,7 +57,13 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             if (result != null)
             {
                 var token = GenerateJwtToken(user.email, result);
-                return Ok(new { Token = token });
+                return Ok(new LoginDTO(){ 
+                    token = token, 
+                    email = result.email ?? "unknown",
+                    user_id = result.user_id, 
+                    nickname = result.nickname ?? "unknown",
+                    role = result.role ?? "unknown"
+                });
             }
             return Unauthorized();
         }
