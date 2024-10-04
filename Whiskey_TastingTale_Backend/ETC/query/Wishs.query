@@ -1,0 +1,22 @@
+use Whiskey_TT; 
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE Wishs (
+    wish_id BIGINT PRIMARY KEY IDENTITY, 
+    user_id INT NOT NULL, 
+    whiskey_id INT NOT NULL
+    CONSTRAINT FK_Wishs_Users FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    CONSTRAINT FK_Wishs_Whiskeys FOREIGN KEY (whiskey_id) REFERENCES Whiskeys(whiskey_id)
+)
+
+-------------------------------------------------------------------------------
+
+INSERT INTO Whiskey_TT.dbo.Wishs (user_id, whiskey_id)
+VALUES (@user_id, @whiskey_id); 
+
+
+INSERT INTO Whiskey_TT.dbo.Wishs (user_id, whiskey_id)
+VALUES (1, 176); 
+
+-------------------------------------------------------------------------------
