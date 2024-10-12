@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Whiskey_TastingTale_Backend.Data.Repository;
 using Whiskey_TastingTale_Backend.Data.Context;
+using Whiskey_TastingTale_Backend.Middleware;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,10 +46,26 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
+//Use Serilog 
+Serilog.Log.Logger = new LoggerConfiguration()
+     //.Enrich.FromLogContext()
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(e => e.MessageTemplate.Text.Contains("[API]"))  // 조건: "Database" 포함
+        .WriteTo.File("logs/API-.log", rollingInterval: RollingInterval.Day))
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(e => e.MessageTemplate.Text.Contains("[ERR]"))  // 조건: "Database" 포함
+        .WriteTo.File("logs/Error-.log", rollingInterval: RollingInterval.Day))
+    .CreateLogger();
+builder.Services.AddSerilog();
+
+
 //Add Repository Service 
 builder.Services.AddTransient<WhiskeyRepository>();
 builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<ReviewRepository>();
+builder.Services.AddTransient<WishRepository>();
 
 
 //Add Db Context
@@ -57,7 +75,8 @@ builder.Services.AddDbContext<UserContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 builder.Services.AddDbContext<ReviewContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
-
+builder.Services.AddDbContext<WishContext>(
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 
 //Setting JWT 
 builder.Services.AddAuthentication(options => //Using jwt as the basic authentication method
@@ -82,6 +101,13 @@ builder.Services.AddAuthentication(options => //Using jwt as the basic authentic
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<LoggingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
+
+
 app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

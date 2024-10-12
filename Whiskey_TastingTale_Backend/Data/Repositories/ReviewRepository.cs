@@ -9,11 +9,13 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
     {
         private readonly ReviewContext _reviewContext;
         private readonly UserContext _userContext;
+        private readonly WhiskeyContext _whiskeyContext;
 
-        public ReviewRepository(ReviewContext reviewContext, UserContext userContext)
+        public ReviewRepository(ReviewContext reviewContext, UserContext userContext, WhiskeyContext whiskeyContext)
         {
             _reviewContext = reviewContext;
             _userContext = userContext;
+            _whiskeyContext = whiskeyContext;
         }
 
         internal async Task<Review> Create(Review review)
@@ -61,9 +63,31 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
 
             return result; 
         }
-        internal async Task<List<Review>> GetByUserId(int user_id)
+        internal async Task<List<ReviewWhiskeyDTO>> GetByUserId(int user_id)
         {
-            return await _reviewContext.reviews.Where(x => x.user_id == user_id).ToListAsync();
+            var reviews = await _reviewContext.reviews.Where(x => x.user_id == user_id).ToListAsync();
+            var whiskeyIDs = reviews.Select(r => r.whiskey_id).Distinct().ToList();
+            var whiskeys = await _whiskeyContext.whiskeys.Where(whiskey => whiskeyIDs.Contains(whiskey.whiskey_id))
+                .ToDictionaryAsync(whiskey => whiskey.whiskey_id, whiskey => whiskey);
+
+            var result = reviews.Select(review =>
+            {
+                Whiskey whiskey = whiskeys.TryGetValue(review.whiskey_id, out Whiskey? value) ? value : null;
+                return new ReviewWhiskeyDTO
+                {
+                    review_id = review.review_id,
+                    user_id = review.user_id,
+                    whiskey_id = review.whiskey_id,
+                    whiskey_name = whiskey.whiskey_name,
+                    whiskey_img_index = whiskey.img_index,
+                    rating = review.rating,
+                    review_text = review.review_text,
+                    created_date = review.created_date,
+                    updated_date = review.updated_date
+                };
+            }).ToList();
+
+            return result; 
         }
 
         internal async Task<Review> Update(Review review)
