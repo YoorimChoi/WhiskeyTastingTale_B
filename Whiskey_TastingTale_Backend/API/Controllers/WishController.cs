@@ -25,9 +25,9 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
         }
 
         [HttpGet("user/{user_id}")]
-        public async Task<IActionResult> GetByUserId(int user_id)
+        public async Task<IActionResult> GetByUserId(int user_id, int page=1)
         {
-            var result = await _repository.GetByUserId(user_id);
+            var result = await _repository.GetByUserId(user_id, page);
             return Ok(result);
         }
 
