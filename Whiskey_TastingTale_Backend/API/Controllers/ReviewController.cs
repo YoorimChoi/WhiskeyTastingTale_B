@@ -18,16 +18,16 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
         }
 
         [HttpGet("whiskey/{whiskey_id}")]
-        public async Task<IActionResult> GetByWhiskeyId(int whiskey_id)
+        public async Task<IActionResult> GetByWhiskeyId(int whiskey_id, int page = 1)
         {
-            var result = await _repository.GetByWhiskeyId(whiskey_id);
+            var result = await _repository.GetByWhiskeyId(whiskey_id, page);
             return Ok(result);
         }
 
         [HttpGet("user/{user_id}")]
-        public async Task<IActionResult> GetByUserId(int user_id)
+        public async Task<IActionResult> GetByUserId(int user_id, int page =1)
         {
-            var result = await _repository.GetByUserId(user_id);
+            var result = await _repository.GetByUserId(user_id, page);
             return Ok(result);
         }
 

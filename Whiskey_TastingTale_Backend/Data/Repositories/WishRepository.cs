@@ -40,14 +40,18 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
             return await _wishContext.wishs.Where(x => x.user_id == user_id && x.whiskey_id == whiskey_id).FirstOrDefaultAsync();
         }
 
-        internal async Task<List<WishWhiskeyDTO>> GetByUserId(int user_id)
+        internal async Task<WishWhiskeyPageDTO> GetByUserId(int user_id, int page = 1, int pageSize = 6)
         {
-            var wishs = await _wishContext.wishs.Where(x => x.user_id == user_id).ToListAsync();
+            var wishs = await _wishContext.wishs.Where(x => x.user_id == user_id)
+                .Skip((page-1)*pageSize).Take(pageSize).ToListAsync();
+
+            var totalCount = await _wishContext.wishs.Where(x => x.user_id == user_id).CountAsync(); 
+
             var whiskeyIDs = wishs.Select(wish => wish.whiskey_id).Distinct().ToList();
             var whiskeys = await _whiskeyContext.whiskeys.Where(whiskey => whiskeyIDs.Contains(whiskey.whiskey_id))
                 .ToDictionaryAsync(whiskey => whiskey.whiskey_id, whiskey=> whiskey);
 
-            var result = wishs.Select(wish =>
+            var wishWhiskey = wishs.Select(wish =>
             {
                 var whiskey = whiskeys.TryGetValue(wish.whiskey_id, out Whiskey? value) ? value : null;
                 return new WishWhiskeyDTO()
@@ -62,6 +66,16 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
                     review_count = whiskey.review_count
                 }; 
             }).ToList();
+
+            var result = new WishWhiskeyPageDTO()
+            {
+                wishs = wishWhiskey,
+                page = page,
+                totalCount = totalCount,
+                pageSize = pageSize,
+                totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
+
 
             return result; 
         }

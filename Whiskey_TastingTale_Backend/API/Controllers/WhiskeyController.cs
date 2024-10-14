@@ -32,9 +32,9 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             return Ok(result);
         }
         [HttpGet("name/{name}")]
-        public async Task<IActionResult> GetByNameAsync(string name)
+        public async Task<IActionResult> GetByNameAsync(string name, int page = 1)
         {
-            var result = await _repository.GetByName(name);
+            var result = await _repository.GetByName(name, page);
             return Ok(result);
         }
 

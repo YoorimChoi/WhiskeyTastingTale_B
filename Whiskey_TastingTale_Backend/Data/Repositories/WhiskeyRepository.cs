@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Whiskey_TastingTale_Backend.Data.Entities;
 using Whiskey_TastingTale_Backend.Data.Context;
+using Whiskey_TastingTale_Backend.API.DTOs;
 
 namespace Whiskey_TastingTale_Backend.Data.Repository
 {
@@ -49,9 +50,25 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
             return await _context.whiskeys.FindAsync(id);
         }
 
-        internal async Task<List<Whiskey>> GetByName(string name)
+        internal async Task<WhiskeyPageDTO> GetByName(string name, int page=1, int pageSize=9 )
         {
-            return await _context.whiskeys.Where(x=> x.whiskey_name.Contains(name)).ToListAsync();
+            await _context.whiskeys.Where(x => x.whiskey_name.Contains(name)).ToListAsync();
+
+            var whiskeys = await _context.whiskeys.Where(x=>x.whiskey_name.Contains(name))
+                                    .Skip((page-1)* pageSize).Take(pageSize).ToListAsync();
+
+            var totalCount = await _context.whiskeys.Where(x => x.whiskey_name.Contains(name)).CountAsync();
+
+            var result = new WhiskeyPageDTO
+            {
+                whiskeys = whiskeys,
+                page = page,
+                pageSize = pageSize,
+                totalCount = totalCount,
+                totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            }; 
+
+            return result; 
         }
 
         internal async Task<Whiskey> UpdateWhiskey(Whiskey whiskey)

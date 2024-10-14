@@ -34,11 +34,15 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
             return review;
         }
 
-        internal async Task<List<ReviewUserDTO>> GetByWhiskeyId(int whiskey_id)
+        internal async Task<ReviewUserPageDTO> GetByWhiskeyId(int whiskey_id, int page = 1, int pageSize = 4)
         {
             var reviews = await _reviewContext.reviews
                 .Where(review => review.whiskey_id == whiskey_id)
+                .Skip((page-1)* pageSize).Take(pageSize)
                 .ToListAsync();
+
+            var totalCount = await _reviewContext.reviews
+                .Where(review => review.whiskey_id == whiskey_id).CountAsync(); 
 
             var userIDs = reviews.Select(r => r.user_id).Distinct().ToList();
             var users = await _userContext.users
@@ -46,7 +50,7 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
                 .ToDictionaryAsync(user => user.user_id, user => user.nickname); // 사용자 ID를 키로 사용하여 닉네임을 사전에 저장
 
 
-            var result = reviews.Select(review => {
+            var reviewUsers = reviews.Select(review => {
                 string nickname = users.TryGetValue(review.user_id, out string? value) ? value : "Unknown User";
                 return new ReviewUserDTO
                 {
@@ -61,16 +65,29 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
                 };
             }).ToList();
 
+            var result = new ReviewUserPageDTO
+            {
+                reviews = reviewUsers,
+                page = page,
+                totalCount = totalCount,
+                pageSize = pageSize,
+                totalPages = (int)Math.Ceiling((double)totalCount /pageSize)
+            }; 
+
             return result; 
         }
-        internal async Task<List<ReviewWhiskeyDTO>> GetByUserId(int user_id)
+        internal async Task<ReviewWhiskeyPageDTO> GetByUserId(int user_id, int page =1, int pageSize=4)
         {
-            var reviews = await _reviewContext.reviews.Where(x => x.user_id == user_id).ToListAsync();
+            var reviews = await _reviewContext.reviews.Where(x => x.user_id == user_id)
+                .Skip((page-1)*pageSize).Take(pageSize).ToListAsync();
+
+            var totalCount = await _reviewContext.reviews.Where(x => x.user_id == user_id).CountAsync(); 
+
             var whiskeyIDs = reviews.Select(r => r.whiskey_id).Distinct().ToList();
             var whiskeys = await _whiskeyContext.whiskeys.Where(whiskey => whiskeyIDs.Contains(whiskey.whiskey_id))
                 .ToDictionaryAsync(whiskey => whiskey.whiskey_id, whiskey => whiskey);
 
-            var result = reviews.Select(review =>
+            var reviewWhiskey = reviews.Select(review =>
             {
                 Whiskey whiskey = whiskeys.TryGetValue(review.whiskey_id, out Whiskey? value) ? value : null;
                 return new ReviewWhiskeyDTO
@@ -86,6 +103,15 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
                     updated_date = review.updated_date
                 };
             }).ToList();
+
+            var result = new ReviewWhiskeyPageDTO
+            {
+                reviews = reviewWhiskey,
+                page = page,
+                totalCount = totalCount,
+                pageSize = pageSize,
+                totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
 
             return result; 
         }
