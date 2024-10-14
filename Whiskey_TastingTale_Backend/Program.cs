@@ -102,6 +102,8 @@ builder.Services.AddAuthentication(options => //Using jwt as the basic authentic
 
 var app = builder.Build();
 
+
+app.UseMiddleware<JwtMiddleware>();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
