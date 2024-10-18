@@ -28,6 +28,20 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
             return null;
         }
 
+        internal async Task<bool> CheckDuplicationEmail(string email)
+        {
+            var count = await _context.users.Where(x => x.email.Equals(email)).CountAsync();
+            if (count == 0) return true;
+            else return false; 
+        }
+
+        internal async Task<bool> CheckDuplicationNickname(string nickname)
+        {
+            var count = await _context.users.Where(x => x.nickname.Equals(nickname)).CountAsync();
+            if (count == 0) return true;
+            else return false;
+        }
+
         internal async Task<User> DeleteUserAsync(int id)
         {
             var user = await _context.users.FindAsync(id);

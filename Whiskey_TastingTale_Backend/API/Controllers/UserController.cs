@@ -41,8 +41,21 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             else return BadRequest(email);
         }
 
+        [HttpGet("duplication/email")]
+        public async Task<IActionResult> CheckDuplicationEmailAsync(string email)
+        {
+            var result = await _repository.CheckDuplicationEmail(email);
+            return Ok(result);
+        }
 
-        [HttpPost]
+        [HttpGet("duplication/nickname")]
+        public async Task<IActionResult> CheckDuplicationNicknameAsync(string nickname)
+        {
+            var result = await _repository.CheckDuplicationNickname(nickname);
+            return Ok(result);
+        }
+
+        [HttpPost("register")]
         public async Task<IActionResult> PostAsync(User user)
         {
             var result = await _repository.AddUserAsync(user);
@@ -90,9 +103,8 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.nickname),
-                new Claim(ClaimTypes.Email, user.email),
-                new Claim(ClaimTypes.Role, user.role)
+                new Claim(ClaimTypes.Role, user.role),
+                new Claim(ClaimTypes.NameIdentifier, user.user_id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -101,7 +113,7 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
 
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
                 claims,
                 expires: expires,
                 signingCredentials: creds

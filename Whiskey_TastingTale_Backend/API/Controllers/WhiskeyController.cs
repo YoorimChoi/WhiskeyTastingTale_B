@@ -18,17 +18,17 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAsync()
         {
             var result = await _repository.GetAllWhiskey();
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIDAsync(int id)
+        [HttpGet("id/{whiskey_id}")]
+        public async Task<IActionResult> GetByIDAsync(int whiskey_id)
         {
-            var result = await _repository.GetById(id);
+            var result = await _repository.GetById(whiskey_id);
             return Ok(result);
         }
         [HttpGet("name/{name}")]
@@ -57,12 +57,12 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        [HttpDelete("{whiskey_id}")]
+        public async Task<IActionResult> DeleteAsync(int whiskey_id)
         {
-            var result = await _repository.DeleteWhiskey(id);
+            var result = await _repository.DeleteWhiskey(whiskey_id);
             if (result != null) return Ok(result);
-            else return BadRequest(id);
+            else return BadRequest(whiskey_id);
         }
     }
 }
