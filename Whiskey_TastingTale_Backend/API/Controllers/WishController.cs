@@ -17,16 +17,20 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             _repository = repository;
         }
 
-        [HttpGet("{user_id}/{whiskey_id}")]
-        public async Task<IActionResult> Get(int user_id, int whiskey_id)
+        [HttpGet("whiskey/{whiskey_id}")]
+        public async Task<IActionResult> Get(int whiskey_id)
         {
+            var user_id = int.Parse(HttpContext.Items["UserId"].ToString());
+
             var result = await _repository.Get(user_id, whiskey_id);
             return Ok(result);
         }
 
-        [HttpGet("user/{user_id}")]
-        public async Task<IActionResult> GetByUserId(int user_id, int page=1)
+        [HttpGet("user")]
+        public async Task<IActionResult> GetByUserId(int page=1)
         {
+            var user_id = int.Parse(HttpContext.Items["UserId"].ToString());
+
             var result = await _repository.GetByUserId(user_id, page);
             return Ok(result);
         }

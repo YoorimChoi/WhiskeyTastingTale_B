@@ -1,9 +1,11 @@
 ﻿
+using Azure.Core;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Whiskey_TastingTale_Backend.Middleware
 {
@@ -11,6 +13,15 @@ namespace Whiskey_TastingTale_Backend.Middleware
     {
         private readonly RequestDelegate _next; 
         private readonly IConfiguration _configuration;
+        private List<string> skipAuthPatterns = new List<string>
+        {
+            "^/swagger.*$",
+            "^/User/.*$",
+            "^/images/.*$",                // 정적 파일 접근 (예: /static/ 경로)
+            "^/uploads/.*$",
+            "^/Review/whiskey/.*$",
+            "^/Whiskey/.*$"
+        };
 
         public JwtMiddleware(RequestDelegate next, IConfiguration configuration)
         {
@@ -20,14 +31,13 @@ namespace Whiskey_TastingTale_Backend.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments("/swagger") || context.Request.Path.StartsWithSegments("/User/login"))
+            if (IsPathSkipped(context.Request.Path, skipAuthPatterns))
             {
-                // swagger 요청인 경우 JWT 검증을 하지 않고 다음 미들웨어로 바로 넘김
                 await _next(context);
                 return;
             }
 
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split("").Last();
+            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
                 var result = AttachUserToContext(context, token);
@@ -80,5 +90,11 @@ namespace Whiskey_TastingTale_Backend.Middleware
                 return false; 
             }
         }
+
+        private bool IsPathSkipped(string path, List<string> patterns)
+        {
+            return patterns.Any(pattern => Regex.IsMatch(path, pattern));
+        }
+
     }
 }

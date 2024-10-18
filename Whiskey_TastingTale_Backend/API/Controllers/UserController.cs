@@ -41,8 +41,21 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             else return BadRequest(email);
         }
 
+        [HttpGet("duplication/email")]
+        public async Task<IActionResult> CheckDuplicationEmailAsync(string email)
+        {
+            var result = await _repository.CheckDuplicationEmail(email);
+            return Ok(result);
+        }
 
-        [HttpPost]
+        [HttpGet("duplication/nickname")]
+        public async Task<IActionResult> CheckDuplicationNicknameAsync(string nickname)
+        {
+            var result = await _repository.CheckDuplicationNickname(nickname);
+            return Ok(result);
+        }
+
+        [HttpPost("register")]
         public async Task<IActionResult> PostAsync(User user)
         {
             var result = await _repository.AddUserAsync(user);
