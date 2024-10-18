@@ -1,0 +1,24 @@
+use Whiskey_TT; 
+
+-------------------------------------------------------------------------------
+CREATE TABLE WhiskeyRequests (
+    request_id INT IDENTITY PRIMARY KEY,     -- 기본 키, 자동 증가
+    user_id INT NOT NULL,                         -- 사용자 ID, 필수 필드
+    name NVARCHAR(255),                           -- 위스키 이름 (nullable)
+    img_index NVARCHAR(MAX),                          -- 이미지 경로 (nullable)
+    alcohol_degree FLOAT,                         -- 알코올 도수 (nullable)
+    maker NVARCHAR(255),                          -- 제조사 (nullable)
+    details NVARCHAR(MAX),                        -- 세부 정보 (nullable)
+    is_completed BIT NOT NULL,                     -- 완료 여부 (필수)
+    is_accepted BIT NOT NULL,                      -- 승인 여부 (필수)
+    whiskey_id INT NULL                           -- 연관된 위스키 ID (nullable)
+
+    CONSTRAINT FK_WhiskeyRequests_Users FOREIGN KEY (user_id)
+        REFERENCES Users(user_id) ON DELETE CASCADE,
+
+    CONSTRAINT FK_WhiskeyRequests_Whiskeys FOREIGN KEY (whiskey_id)
+        REFERENCES Whiskeys(whiskey_id) ON DELETE SET NULL
+);
+
+
+-------------------------------------------------------------------------------

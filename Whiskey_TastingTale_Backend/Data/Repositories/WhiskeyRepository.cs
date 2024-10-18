@@ -2,15 +2,18 @@
 using Whiskey_TastingTale_Backend.Data.Entities;
 using Whiskey_TastingTale_Backend.Data.Context;
 using Whiskey_TastingTale_Backend.API.DTOs;
+using Azure;
 
 namespace Whiskey_TastingTale_Backend.Data.Repository
 {
     public class WhiskeyRepository
     {
-        private readonly WhiskeyContext _context;
-        public WhiskeyRepository(WhiskeyContext context)
+        private readonly WhiskeyContext _whiskeyContext;
+        private readonly WhiskeyRequestContext _requestContext;
+        public WhiskeyRepository(WhiskeyContext whiskeyContext, WhiskeyRequestContext requestContext)
         {
-            _context = context;
+            _whiskeyContext = whiskeyContext;
+            _requestContext = requestContext;
         }
 
         internal async Task<Whiskey> AddWhiskey(Whiskey whiskey)
@@ -22,19 +25,20 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
                 maker = whiskey.maker
                 //TODO) 이미지는 어떻게 넣지? img_index
             };
-            await _context.whiskeys.AddAsync(temp);
-            await _context.SaveChangesAsync();
+            await _whiskeyContext.whiskeys.AddAsync(temp);
+            await _whiskeyContext.SaveChangesAsync();
 
             return temp;
         }
 
+
         internal async Task<Whiskey> DeleteWhiskey(int id)
         {
-            var temp = _context.whiskeys.FindAsync(id).Result;
+            var temp = _whiskeyContext.whiskeys.FindAsync(id).Result;
             if(temp != null)
             {
-                _context.whiskeys.Remove(temp);
-                await _context.SaveChangesAsync();
+                _whiskeyContext.whiskeys.Remove(temp);
+                await _whiskeyContext.SaveChangesAsync();
             }
 
             return temp;
@@ -42,22 +46,22 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
 
         internal async Task<List<Whiskey>> GetAllWhiskey()
         {
-            return await _context.whiskeys.AsQueryable().ToListAsync();
+            return await _whiskeyContext.whiskeys.AsQueryable().ToListAsync();
         }
 
         internal async Task<Whiskey> GetById(int id)
         {
-            return await _context.whiskeys.FindAsync(id);
+            return await _whiskeyContext.whiskeys.FindAsync(id);
         }
 
         internal async Task<WhiskeyPageDTO> GetByName(string name, int page=1, int pageSize=9 )
         {
-            await _context.whiskeys.Where(x => x.whiskey_name.Contains(name)).ToListAsync();
+            await _whiskeyContext.whiskeys.Where(x => x.whiskey_name.Contains(name)).ToListAsync();
 
-            var whiskeys = await _context.whiskeys.Where(x=>x.whiskey_name.Contains(name))
+            var whiskeys = await _whiskeyContext.whiskeys.Where(x=>x.whiskey_name.Contains(name))
                                     .Skip((page-1)* pageSize).Take(pageSize).ToListAsync();
 
-            var totalCount = await _context.whiskeys.Where(x => x.whiskey_name.Contains(name)).CountAsync();
+            var totalCount = await _whiskeyContext.whiskeys.Where(x => x.whiskey_name.Contains(name)).CountAsync();
 
             var result = new WhiskeyPageDTO
             {
@@ -73,8 +77,8 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
 
         internal async Task<Whiskey> UpdateWhiskey(Whiskey whiskey)
         {
-            var temp = _context.whiskeys.Update(whiskey);
-            await _context.SaveChangesAsync();
+            var temp = _whiskeyContext.whiskeys.Update(whiskey);
+            await _whiskeyContext.SaveChangesAsync();
 
             return temp.Entity;
         }

@@ -66,7 +66,7 @@ builder.Services.AddTransient<WhiskeyRepository>();
 builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<ReviewRepository>();
 builder.Services.AddTransient<WishRepository>();
-
+builder.Services.AddTransient<WhiskeyRequestRepository>();
 
 //Add Db Context
 builder.Services.AddDbContext<WhiskeyContext>(
@@ -76,6 +76,8 @@ builder.Services.AddDbContext<UserContext>(
 builder.Services.AddDbContext<ReviewContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 builder.Services.AddDbContext<WishContext>(
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
+builder.Services.AddDbContext<WhiskeyRequestContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 
 //Setting JWT 
