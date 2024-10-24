@@ -1,15 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Whiskey_TastingTale_Backend.Data.Entities;
 using Whiskey_TastingTale_Backend.Data.Context;
+using Whiskey_TastingTale_Backend.API.DTOs;
 
 namespace Whiskey_TastingTale_Backend.Data.Repository
 {
     public class WhiskeyRequestRepository
     {
         private readonly WhiskeyRequestContext _requestContext;
-        public WhiskeyRequestRepository(WhiskeyRequestContext requestContext)
+        private readonly UserContext _userContext;
+        public WhiskeyRequestRepository(WhiskeyRequestContext requestContext, UserContext userContext)
         {
             _requestContext = requestContext;
+            _userContext = userContext;
         }
 
         internal async Task<WhiskeyRequest> AddWhiskeyRequest(WhiskeyRequest request)
@@ -32,9 +35,34 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
             return result.Entity;
         }
 
-        internal async Task<List<WhiskeyRequest>> GetAllRequest()
-        { 
-            return await _requestContext.whiskeyRequests.AsQueryable().ToListAsync();
+        internal async Task<List<WhiskeyRequestUserDTO>> GetAllRequest()
+        {
+            var requests = await _requestContext.whiskeyRequests.AsQueryable().ToListAsync();
+
+            var userList = requests.Select(x => x.user_id).Distinct().ToList();
+            var users = await _userContext.users.Where(x => userList.Contains(x.user_id)).ToDictionaryAsync(x => x.user_id, x => x);
+
+            var requestUsers = requests.Select(request =>
+            {
+                User user = users.TryGetValue(request.user_id, out User? value) ? value : null;
+                return new WhiskeyRequestUserDTO
+                {
+                    user_id = user.user_id,
+                    user_email = user.email, 
+                    user_nickname = user.nickname,
+                    request_id = request.request_id, 
+                    img_index = request.img_index,
+                    name = request.name,
+                    alcohol_degree = request.alcohol_degree,
+                    details = request.details,
+                    maker = request.maker,
+                    is_accepted = request.is_accepted,
+                    is_completed = request.is_completed,
+                    whiskey_id = request.whiskey_id 
+                };
+            }).ToList();
+
+            return requestUsers;
         }
 
         internal async Task<List<WhiskeyRequest>> GetByUserId(int user_id)

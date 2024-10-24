@@ -46,7 +46,7 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
         public async Task<IActionResult> PutAsync(WhiskeyRequest request)
         {
             var user_id = int.Parse(HttpContext.Items["UserId"].ToString());
-            var role = int.Parse(HttpContext.Items["UserRole"].ToString());
+            var role = HttpContext.Items["UserRole"].ToString();
             if (role.Equals("user") && request.user_id != user_id) return BadRequest(request);
 
 
