@@ -11,11 +11,13 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
     {
         private readonly ILogger<WhiskeyController> _logger;
         private readonly WhiskeyRepository _repository;
+        private readonly NotificationRepository _notificationRepository; 
 
-        public WhiskeyController(ILogger<WhiskeyController> logger, WhiskeyRepository repository)
+        public WhiskeyController(ILogger<WhiskeyController> logger, WhiskeyRepository repository, NotificationRepository notificationRepository)
         {
             _logger = logger;
             _repository = repository;
+            _notificationRepository = notificationRepository;
         }
 
         [HttpGet("all")]
@@ -43,7 +45,11 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
         public async Task<IActionResult> PostAsync(Whiskey whiskey)
         {
             var result = await _repository.AddWhiskey(whiskey);
-            if (result != null) return Ok(result);
+            if (result != null)
+            {
+                await _notificationRepository.AddWhiskeyNotification(whiskey.whiskey_id, whiskey.whiskey_name);
+                return Ok(result);
+            }
             else return BadRequest(whiskey);
         }
 
