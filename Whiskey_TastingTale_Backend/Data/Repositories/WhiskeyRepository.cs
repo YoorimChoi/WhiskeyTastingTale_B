@@ -51,7 +51,7 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
                 throw new Exception("해당 이미지가 존재하지 않습니다."); 
             }
 
-            System.IO.File.Move(sourceFilePath, destinationFilePath);
+            System.IO.File.Copy(sourceFilePath, destinationFilePath);
 
             var temp = new Whiskey()
             {
