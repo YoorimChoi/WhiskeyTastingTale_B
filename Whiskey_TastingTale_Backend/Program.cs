@@ -7,7 +7,7 @@ using Whiskey_TastingTale_Backend.Data.Repository;
 using Whiskey_TastingTale_Backend.Data.Context;
 using Whiskey_TastingTale_Backend.Middleware;
 using Serilog;
-
+using Whiskey_TastingTale_Backend.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -67,6 +67,9 @@ builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<ReviewRepository>();
 builder.Services.AddTransient<WishRepository>();
 builder.Services.AddTransient<WhiskeyRequestRepository>();
+builder.Services.AddTransient<NotificationRepository>();
+
+builder.Services.AddSingleton<NotificationService>(); 
 
 //Add Db Context
 builder.Services.AddDbContext<WhiskeyContext>(
@@ -78,6 +81,8 @@ builder.Services.AddDbContext<ReviewContext>(
 builder.Services.AddDbContext<WishContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 builder.Services.AddDbContext<WhiskeyRequestContext>(
+        options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
+builder.Services.AddDbContext<NotificationContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("localmssql")));
 
 //Setting JWT 
@@ -102,6 +107,8 @@ builder.Services.AddAuthentication(options => //Using jwt as the basic authentic
     };
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 
@@ -125,5 +132,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");
+
 
 app.Run();

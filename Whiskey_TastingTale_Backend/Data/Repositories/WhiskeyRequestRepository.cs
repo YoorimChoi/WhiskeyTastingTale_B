@@ -9,10 +9,12 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
     {
         private readonly WhiskeyRequestContext _requestContext;
         private readonly UserContext _userContext;
-        public WhiskeyRequestRepository(WhiskeyRequestContext requestContext, UserContext userContext)
+        private readonly NotificationRepository _notiRepository; 
+        public WhiskeyRequestRepository(WhiskeyRequestContext requestContext, UserContext userContext, NotificationRepository notiRepository)
         {
             _requestContext = requestContext;
             _userContext = userContext;
+            _notiRepository = notiRepository;
         }
 
         internal async Task<WhiskeyRequest> AddWhiskeyRequest(WhiskeyRequest request)
@@ -72,7 +74,24 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
 
         internal async Task<WhiskeyRequest> UpdateWhiskeyReqeust(WhiskeyRequest request)
         {
-            var temp = _requestContext.whiskeyRequests.Update(request);
+            var origin = await _requestContext.whiskeyRequests.FindAsync(request.request_id); 
+
+            if(origin.is_completed == false && request.is_completed == true)
+            {
+                _notiRepository.SendResultOfRequest(request); 
+            }
+
+            origin.name = request.name;
+            origin.details = request.details;
+            origin.maker = request.maker;
+            origin.details = request.details; 
+            origin.is_accepted = request.is_accepted;
+            origin.is_completed = request.is_completed;
+            origin.img_index = request.img_index;
+            origin.alcohol_degree = request.alcohol_degree; 
+            origin.whiskey_id = request.whiskey_id; 
+
+            var temp = _requestContext.whiskeyRequests.Update(origin);
             await _requestContext.SaveChangesAsync();
 
             return temp.Entity; 

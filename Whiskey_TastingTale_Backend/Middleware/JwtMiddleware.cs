@@ -20,7 +20,8 @@ namespace Whiskey_TastingTale_Backend.Middleware
             "^/images/.*$",                // 정적 파일 접근 (예: /static/ 경로)
             "^/uploads/.*$",
             "^/Review/whiskey/.*$",
-            "^/Whiskey/.*$"
+            "^/Whiskey/.*$",
+            "^/notificationHub.*$"
         };
 
         public JwtMiddleware(RequestDelegate next, IConfiguration configuration)
