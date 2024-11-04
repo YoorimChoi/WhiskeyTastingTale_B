@@ -26,7 +26,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7299;http://localhost:5162",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ELASTIC_APM_SERVER_URLS": "http://localhost:8200",
+        "ELASTIC_APM_SERVICE_NAME": "WhiskeyTastingTale-Back",
+        "ELASTIC_APM_LOG_LEVEL": "Debug",
+        "ELASTIC_APM_TRANSACTION_SAMPLE_RATE": "1.0",
+        "ELASTIC_APM_CAPTURE_EXCEPTIONS": "true"
       }
     },
     "IIS Express": {
