@@ -8,6 +8,7 @@ using Whiskey_TastingTale_Backend.Data.Context;
 using Whiskey_TastingTale_Backend.Middleware;
 using Serilog;
 using Whiskey_TastingTale_Backend.Services;
+using Elastic.Apm.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -69,7 +70,10 @@ builder.Services.AddTransient<WishRepository>();
 builder.Services.AddTransient<WhiskeyRequestRepository>();
 builder.Services.AddTransient<NotificationRepository>();
 
-builder.Services.AddSingleton<NotificationService>(); 
+
+builder.Services.AddSingleton<NotificationService>();
+
+builder.Services.AddAllElasticApm();
 
 //Add Db Context
 builder.Services.AddDbContext<WhiskeyContext>(
@@ -118,7 +122,6 @@ app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 
-
 app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -126,6 +129,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseElasticApm();
 
 app.UseHttpsRedirection();
 
@@ -133,6 +137,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/notificationHub");
+
 
 
 app.Run();
