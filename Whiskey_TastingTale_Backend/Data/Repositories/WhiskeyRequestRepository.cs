@@ -74,24 +74,14 @@ namespace Whiskey_TastingTale_Backend.Data.Repository
 
         internal async Task<WhiskeyRequest> UpdateWhiskeyReqeust(WhiskeyRequest request)
         {
-            var origin = await _requestContext.whiskeyRequests.FindAsync(request.request_id); 
+            var origin = await _requestContext.whiskeyRequests.Where(x => x.request_id == request.request_id).AsNoTracking().FirstOrDefaultAsync();
 
             if(origin.is_completed == false && request.is_completed == true)
             {
                 _notiRepository.SendResultOfRequest(request); 
             }
 
-            origin.name = request.name;
-            origin.details = request.details;
-            origin.maker = request.maker;
-            origin.details = request.details; 
-            origin.is_accepted = request.is_accepted;
-            origin.is_completed = request.is_completed;
-            origin.img_index = request.img_index;
-            origin.alcohol_degree = request.alcohol_degree; 
-            origin.whiskey_id = request.whiskey_id; 
-
-            var temp = _requestContext.whiskeyRequests.Update(origin);
+            var temp = _requestContext.whiskeyRequests.Update(request);
             await _requestContext.SaveChangesAsync();
 
             return temp.Entity; 
