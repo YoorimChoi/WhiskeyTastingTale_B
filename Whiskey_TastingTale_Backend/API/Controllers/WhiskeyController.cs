@@ -47,7 +47,7 @@ namespace Whiskey_TastingTale_Backend.API.Controllers
             var result = await _repository.AddWhiskey(whiskey);
             if (result != null)
             {
-                await _notificationRepository.AddWhiskeyNotification(whiskey.whiskey_id, whiskey.whiskey_name);
+                await _notificationRepository.AddWhiskeyNotification(result.whiskey_id, result.whiskey_name);
                 return Ok(result);
             }
             else return BadRequest(whiskey);
